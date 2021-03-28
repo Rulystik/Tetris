@@ -17,4 +17,9 @@
             _model.SetFieldValue(8,5,true);
         }
 
+        public void CreateNewOne()
+        {
+            
+        }
+
     }

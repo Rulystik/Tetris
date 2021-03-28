@@ -1,3 +1,5 @@
+using System;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,14 +7,20 @@ namespace DefaultNamespace
 {
     public class View : MonoBehaviour
     {
-        [SerializeField] private Tetromino _tetrominoPrefab;
-        
+        [SerializeField] private Tetramino tetraminoPrefab;
+       
         [Space]
         [SerializeField] private GridLayoutGroup _grid;
         [SerializeField] private IModelView _model;
-        [SerializeField] private Tetromino _tetromino;
+        [SerializeField] private Tetramino tetramino;
 
-        [SerializeField] private Tetromino[,] _fieldView;
+        [SerializeField] private Tetramino[,] _fieldView;
+
+        private void Start()
+        {
+            var rec = (_grid.transform as RectTransform).rect.size;
+            _grid.cellSize = new Vector2((rec.x / 10 - _grid.spacing.x),( (rec.y / 20 - _grid.spacing.y)));
+        }
 
         public void Init(IModelView model)
         {
@@ -23,8 +31,7 @@ namespace DefaultNamespace
 
         private void OnFieldCreate(bool[,] field)
         {
-            if (_fieldView == null)
-                InitField(field);
+            InitField(field);
         }
         
         private void OnFieldChange(int x, int y, bool value)
@@ -37,18 +44,19 @@ namespace DefaultNamespace
 
         private void InitField(bool[,] field)
         {
-            var xLence = field.GetLength(0);
-            var yLence = field.GetLength(1);
+            if (_fieldView != null)
+                return;
+            
             var rec = (_grid.transform as RectTransform).rect.size;
-            _grid.cellSize = new Vector2((rec.x / xLence - _grid.spacing.x),( (rec.y / yLence - _grid.spacing.y)));
-            _fieldView = new Tetromino[field.GetLength(0),field.GetLength(1)];
+            _grid.cellSize = new Vector2((rec.x / Model.XCount - _grid.spacing.x),( (rec.y / Model.YCount - _grid.spacing.y)));
+            _fieldView = new Tetramino[Model.XCount, Model.YCount];
 
-            for (int x = 0; x < field.GetLength(0); x++)
-            for (int y = 0; y < field.GetLength(1); y++)
+            for (int x = 0; x < Model.XCount; x++)
+            for (int y = 0; y < Model.YCount; y++)
             {
-                var c = Instantiate(_tetrominoPrefab, _grid.transform);
+                var c = Instantiate(tetraminoPrefab, _grid.transform);
                 c.name = $"[{x},{y}]";
-                c.IsActive = field[x, y];
+                c.IsActive = field[x,y];
                 _fieldView[x, y] = c;
             }
             

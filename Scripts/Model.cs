@@ -8,13 +8,26 @@ namespace DefaultNamespace
         event Action <bool[,]> FieldCreate ;
         event Action <int,int,bool> FieldChanged ;
     }
-    
+
+    public class Figures
+    {
+        private bool[,] O = {{true,true},{true,true}};
+        private bool[,] L = {{true,true},{true,true}};
+        private bool[,] J = {{true,true},{true,true}};
+        private bool[,] S = {{true,true},{true,true}};
+        private bool[,] Z = {{true,true},{true,true}};
+        private bool[,] E = {{true,true},{true,true}};
+    }
     
     
     
     [Serializable]
     public class Model : IModelView
     {
+        public const int XCount = 10;
+        public const int YCount = 20;
+        
+        
         [SerializeField]
         private bool[,] _activeObj;
         
