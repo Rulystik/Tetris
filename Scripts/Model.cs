@@ -1,7 +1,17 @@
+using System.Collections.Generic;
+
 namespace DefaultNamespace
 {
     public class Model
     {
-        public class
+        
+        private List<int> _field;
+
+
+        public List<int> Field
+        {
+            get => _field;
+            set => _field = value;
+        }
     }
 }
