@@ -1,3 +1,4 @@
+    using System;
     using DefaultNamespace;
 
     public class Controller
@@ -17,16 +18,37 @@
             StartPlay();
         }
 
+        private void OnRotareAction(ShiftDirection direction)
+        {
+            switch (direction)
+            {
+                case ShiftDirection.down:
+                    _tetramino.ShiftDown();
+                    break;
+                case ShiftDirection.left:
+                    _tetramino.ShiftLeft();
+                    break;
+                case ShiftDirection.right:
+                    _tetramino.ShiftRight();
+                    break;
+                case ShiftDirection.rotate:
+                    _tetramino.Rotate();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+            }
+        }
+
         private void OnTetraminoAction(Cell[,] obj)
         {
             foreach (Cell cell in _tetramino.Cell)
                 _model.SetFieldValue(cell);
         }
 
-        private void OnRotareAction()
-        {
-            _tetramino.Rotate();
-        }
+        // private void OnRotareAction()
+        // {
+        //     _tetramino.Rotate();
+        // }
 
 
         private void StartPlay()

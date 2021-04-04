@@ -7,7 +7,9 @@ namespace DefaultNamespace
 {
     public class View : MonoBehaviour
     {
-        public Action RotareAction;
+        public Action<ShiftDirection> RotareAction;
+        // public Action LeftAction;
+        // public Action RightAction;
         
         [SerializeField] private TetraminoView tetraminoViewPrefab;
        
@@ -17,16 +19,37 @@ namespace DefaultNamespace
 
         [SerializeField] private TetraminoView[,] _fieldView;
         [SerializeField] private Button _rotateButton;
+        [SerializeField] private Button _leftButton;
+        [SerializeField] private Button _rightButton;
+        [SerializeField] private Button _downButton;
         private void Start()
         {
             var rec = (_grid.transform as RectTransform).rect.size;
             _grid.cellSize = new Vector2((rec.x / 10 - _grid.spacing.x),( (rec.y / 20 - _grid.spacing.y)));
             _rotateButton.onClick.AddListener(Rotate);
+            _leftButton.onClick.AddListener(LeftShift);
+            _rightButton.onClick.AddListener(RightShift);
+            _downButton.onClick.AddListener(DownShift);
         }
 
+        private void DownShift()
+        {
+            RotareAction?.Invoke(ShiftDirection.down);
+        }
+
+        private void RightShift()
+        {
+            RotareAction?.Invoke(ShiftDirection.right);
+        }
+
+        private void LeftShift()
+        {
+            RotareAction?.Invoke(ShiftDirection.left);
+        }
+        
         private void Rotate()
         {
-            RotareAction?.Invoke();
+            RotareAction?.Invoke(ShiftDirection.rotate);
         }
 
         public void Init(IModelView model)

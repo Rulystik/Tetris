@@ -16,6 +16,4 @@ public class GameInitializer : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-   
 }

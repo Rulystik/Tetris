@@ -3,14 +3,16 @@ using System.Collections.Generic;
 
 namespace DefaultNamespace
 {
+    public enum ShiftDirection
+    {
+        down,
+        left,
+        right,
+        rotate
+    }
     public class TetraminoData
     {
-        private enum ShiftDirection
-        {
-            down = -1,
-            left = -1,
-            right = 1
-        }
+        
         public Action<Cell[,]> TetraminoAction;
         
         private Cell[,] cell = new Cell[4, 4];
@@ -90,7 +92,7 @@ namespace DefaultNamespace
                 if(dir == ShiftDirection.down)
                   cell[x, y].Y -= 1;
                 else
-                    cell[x, y].X += (int) dir;
+                    cell[x, y].X += dir == ShiftDirection.left? -1 : 1;
             }
             TetraminoAction?.Invoke(cell);
         }
