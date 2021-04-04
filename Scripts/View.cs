@@ -7,6 +7,8 @@ namespace DefaultNamespace
 {
     public class View : MonoBehaviour
     {
+        public Action RotareAction;
+        
         [SerializeField] private TetraminoView tetraminoViewPrefab;
        
         [Space]
@@ -14,11 +16,17 @@ namespace DefaultNamespace
         [SerializeField] private IModelView _model;
 
         [SerializeField] private TetraminoView[,] _fieldView;
-
+        [SerializeField] private Button _rotateButton;
         private void Start()
         {
             var rec = (_grid.transform as RectTransform).rect.size;
             _grid.cellSize = new Vector2((rec.x / 10 - _grid.spacing.x),( (rec.y / 20 - _grid.spacing.y)));
+            _rotateButton.onClick.AddListener(Rotate);
+        }
+
+        private void Rotate()
+        {
+            RotareAction?.Invoke();
         }
 
         public void Init(IModelView model)

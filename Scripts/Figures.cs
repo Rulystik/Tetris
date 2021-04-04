@@ -26,6 +26,7 @@ namespace DefaultNamespace
                 cell[x,y] = new Cell{X = a+x, Y = b+y , init = array[x,y]};
             }
             cellCache = cell;
+            TetraminoAction?.Invoke(cell);
         }
 
         public Cell[,] Cell => cell;

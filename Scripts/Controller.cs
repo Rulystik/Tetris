@@ -11,18 +11,28 @@
         {
             _model = model;
             _view = view;
+            _view.RotareAction += OnRotareAction;
             InitModel();
+            _tetramino.TetraminoAction += OnTetraminoAction;
             StartPlay();
         }
 
-        
+        private void OnTetraminoAction(Cell[,] obj)
+        {
+            foreach (Cell cell in _tetramino.Cell)
+                _model.SetFieldValue(cell);
+        }
+
+        private void OnRotareAction()
+        {
+            _tetramino.Rotate();
+        }
+
+
         private void StartPlay()
         {
             var newFigure = _figures.GetRandomFigure();
             _tetramino.Init(newFigure);
-            
-            foreach (Cell cell in _tetramino.Cell)
-                _model.SetFieldValue(cell);
         }
 
         void InitModel()
