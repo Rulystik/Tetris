@@ -7,14 +7,13 @@ namespace DefaultNamespace
 {
     public class View : MonoBehaviour
     {
-        [SerializeField] private Tetramino tetraminoPrefab;
+        [SerializeField] private TetraminoView tetraminoViewPrefab;
        
         [Space]
         [SerializeField] private GridLayoutGroup _grid;
         [SerializeField] private IModelView _model;
-        [SerializeField] private Tetramino tetramino;
 
-        [SerializeField] private Tetramino[,] _fieldView;
+        [SerializeField] private TetraminoView[,] _fieldView;
 
         private void Start()
         {
@@ -27,6 +26,12 @@ namespace DefaultNamespace
             _model = model;
             _model.FieldCreate += OnFieldCreate;
             _model.FieldChanged += OnFieldChange;
+            _model.CellChange += OnCellChange;
+        }
+
+        private void OnCellChange(Cell cell)
+        {
+            _fieldView[cell.X, cell.Y].IsActive = cell.init ;
         }
 
         private void OnFieldCreate(bool[,] field)
@@ -49,17 +54,20 @@ namespace DefaultNamespace
             
             var rec = (_grid.transform as RectTransform).rect.size;
             _grid.cellSize = new Vector2((rec.x / Model.XCount - _grid.spacing.x),( (rec.y / Model.YCount - _grid.spacing.y)));
-            _fieldView = new Tetramino[Model.XCount, Model.YCount];
+            _fieldView = new TetraminoView[Model.XCount, Model.YCount];
 
-            for (int x = 0; x < Model.XCount; x++)
             for (int y = 0; y < Model.YCount; y++)
+            for (int x = 0; x < Model.XCount; x++)
             {
-                var c = Instantiate(tetraminoPrefab, _grid.transform);
+                var c = Instantiate(tetraminoViewPrefab, _grid.transform);
                 c.name = $"[{x},{y}]";
                 c.IsActive = field[x,y];
                 _fieldView[x, y] = c;
             }
-            
+        }
+
+        public void Update()
+        {
             
         }
     }

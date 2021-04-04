@@ -1,37 +1,31 @@
 using System;
 using UnityEngine;
+using Object = System.Object;
 
 namespace DefaultNamespace
 {
     public interface IModelView
     {
         event Action <bool[,]> FieldCreate ;
+        event Action <Cell> CellChange ;
         event Action <int,int,bool> FieldChanged ;
     }
 
-    public class Figures
-    {
-        private bool[,] O = {{true,true},{true,true}};
-        private bool[,] L = {{true,true},{true,true}};
-        private bool[,] J = {{true,true},{true,true}};
-        private bool[,] S = {{true,true},{true,true}};
-        private bool[,] Z = {{true,true},{true,true}};
-        private bool[,] E = {{true,true},{true,true}};
-    }
-    
-    
-    
     [Serializable]
     public class Model : IModelView
     {
         public const int XCount = 10;
         public const int YCount = 20;
-        
+        public static readonly int[] startPos = {9,13};
+        private Figures _figures;
+        public Figures Figures => _figures ?? (_figures = new Figures()); 
         
         [SerializeField]
         private bool[,] _activeObj;
         
+        
         public Action <bool[,]> ActiveObjChange ;
+        public Action <Cell[,]> Tetromino ;
 
         public bool[,] ActiveObj
         {
@@ -50,6 +44,7 @@ namespace DefaultNamespace
         private bool[,] _field ;
         
         public event Action <bool[,]> FieldCreate ;
+        public event Action<Cell> CellChange;
         public event Action <int,int,bool> FieldChanged ;
 
         public bool[,] Field
@@ -71,9 +66,22 @@ namespace DefaultNamespace
                 _field[x, y] = value;
                 FieldChanged?.Invoke(x, y, value);
             }
+        } 
+        public void SetFieldValue(Cell cell)
+        {
+            if (_field[cell.X, cell.Y]  != cell.init)
+            {
+                _field[cell.X, cell.Y] = cell.init;
+                CellChange?.Invoke(cell);
+            }
         }
 
     }
 
+    public struct Cell
+    {
+        public int X, Y;
+        public bool init;
+    }
    
 }
