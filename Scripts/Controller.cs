@@ -4,6 +4,15 @@
     using DefaultNamespace;
     using UnityEngine;
 
+    public enum ErrorType
+    {
+        None,
+        Outleft,
+        OutRight,
+        OutDown,
+        ColizionCell,
+        
+    }
     public class Controller
     {
         private Model _model;
@@ -28,21 +37,70 @@
 
         private void OnTetraminoChange()
         {
-            if (!IsValide())// todo add check if licvide
+            var error = IsValide();
+            
+            if (error != ErrorType.None )// todo add check if licvide
             {
                 _tetramino.StepBack();
                 
                 if (_tetramino.Direction == ShiftDirection.down)
                     Debug.Log($"OnGround => TODO");
                 else
-                    Debug.Log($"You cannot do: {_tetramino.Direction}");
+                    Debug.Log($"error: {error}  you cannot do: {_tetramino.Direction}");
                 
                 return;
             }
             
             List<Cell> changes = GetCellsChanges();
+            
             foreach (Cell cell in changes)
                 _model.SetFieldValue(cell);
+        }
+
+        private ErrorType IsValide()
+        {
+            IEnumerable<Cell> cells = _tetramino.Cell.Cast<Cell>();
+            ShiftDirection dir = _tetramino.Direction;
+            if ((dir == ShiftDirection.left ||dir == ShiftDirection.rotate) && IsOutOfBorderLeft())
+            {
+                return ErrorType.Outleft;
+            }
+
+            if ((dir == ShiftDirection.right ||dir == ShiftDirection.rotate) && IsOutOfBorderRight())
+            {
+                return ErrorType.OutRight;
+            }
+            if ((dir == ShiftDirection.down ||dir == ShiftDirection.rotate) && IsOutOfBorderDown())
+            {
+                return ErrorType.OutDown;
+            }
+
+            if (IsStepOnCollizionCell())
+            {
+                return ErrorType.ColizionCell;
+            }
+
+            return ErrorType.None;
+             
+             
+            bool IsOutOfBorderLeft()
+            {
+                return cells.Any(cell => cell.init && cell.X < 0);
+            }
+            bool IsOutOfBorderRight()
+            {
+                return cells.Any(cell => cell.init && cell.X >= Model.XCount);
+            }
+            bool IsOutOfBorderDown()
+            {
+                return cells.Any(cell => cell.init && cell.Y < 0);
+            }
+
+            bool IsStepOnCollizionCell()
+            {
+                return _model.FieldDropperCell.Any(i=> cells.Any(i.EqualsPosition)); 
+            }
+            
         }
 
         private List<Cell> GetCellsChanges()
@@ -58,58 +116,6 @@
             return cells.ToList();
         }
 
-        private bool IsValide()
-        {
-            IEnumerable<Cell> cells = _tetramino.Cell.Cast<Cell>();
-            ShiftDirection dir = _tetramino.Direction;
-             if ((dir == ShiftDirection.left ||dir == ShiftDirection.rotate) && IsOutOfBorderLeft())
-             {
-                 return false;
-             }
-
-             if ((dir == ShiftDirection.right ||dir == ShiftDirection.rotate) && IsOutOfBorderRight())
-             {
-                 return false;
-             }
-             if ((dir == ShiftDirection.down ||dir == ShiftDirection.rotate) && IsOutOfBorderDown())
-             {
-                 return false;
-             }
-
-             if (IsStepOnDroppedCell())
-             {
-                 return false;
-             }
-
-             return true;
-             
-             
-             bool IsOutOfBorderLeft()
-             {
-                 return cells.Any(cell => cell.init && cell.X < 0);
-             }
-             bool IsOutOfBorderRight()
-             {
-                 return cells.Any(cell => cell.init && cell.X >= Model.XCount);
-             }
-            bool IsOutOfBorderDown()
-             {
-                 return cells.Any(cell => cell.init && cell.Y < 0);
-             }
-
-             bool IsStepOnDroppedCell()
-             {
-                return _model.FieldDropperCell.Any(i=> cells.Any(i.EqualsPosition)); 
-             }
-            
-        }
-
-        // private void OnRotareAction()
-        // {
-        //     _tetramino.Rotate();
-        // }
-
-
         private void StartPlay()
         {
             var newFigure = _figures.GetRandomFigure();
@@ -119,9 +125,6 @@
         void InitModel()
         {
             _model.Field = new bool[10, 20];
-            // _model.SetFieldValue(new Cell() {X = 8, Y = 5, init = true});
         }
-        
-        
-       
+
     }
