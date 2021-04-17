@@ -1,5 +1,6 @@
 using System;
 using Unity.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,8 @@ namespace DefaultNamespace
 {
     public class View : MonoBehaviour
     {
-        public Action<ShiftDirection> RotareAction;
+        [SerializeField] private GUIStyle _guiStyle;
+        public Action<ShiftDirection> Input;
         // public Action LeftAction;
         // public Action RightAction;
         
@@ -34,22 +36,22 @@ namespace DefaultNamespace
 
         private void DownShift()
         {
-            RotareAction?.Invoke(ShiftDirection.down);
+            Input?.Invoke(ShiftDirection.down);
         }
 
         private void RightShift()
         {
-            RotareAction?.Invoke(ShiftDirection.right);
+            Input?.Invoke(ShiftDirection.right);
         }
 
         private void LeftShift()
         {
-            RotareAction?.Invoke(ShiftDirection.left);
+            Input?.Invoke(ShiftDirection.left);
         }
         
         private void Rotate()
         {
-            RotareAction?.Invoke(ShiftDirection.rotate);
+            Input?.Invoke(ShiftDirection.rotate);
         }
 
         public void Init(IModelView model)
@@ -97,8 +99,19 @@ namespace DefaultNamespace
             }
         }
 
-        public void Update()
+        private void OnDrawGizmos()
         {
+            if (_fieldView != null)
+            {
+                Handles.color = Color.cyan;
+                foreach (var tetraminoView in _fieldView)
+                {
+                    if (tetraminoView.IsActive)
+                    {
+                        Handles.Label(tetraminoView.transform.position, tetraminoView.name,_guiStyle);
+                    }
+                }
+            }
             
         }
     }

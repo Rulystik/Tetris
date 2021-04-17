@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = System.Object;
 
@@ -42,7 +43,7 @@ namespace DefaultNamespace
         
         [SerializeField]
         private bool[,] _field ;
-        
+
         public event Action <bool[,]> FieldCreate ;
         public event Action<Cell> CellChange;
         public event Action <int,int,bool> FieldChanged ;
@@ -59,6 +60,12 @@ namespace DefaultNamespace
             }
         }
 
+        public List<Cell> FieldDropperCell { get; private set; }
+
+        public Model()
+        {
+            FieldDropperCell = new List<Cell>();
+        }
         public void SetFieldValue(int x, int y, bool value)
         {
             if (_field[x, y] != value)
@@ -82,6 +89,16 @@ namespace DefaultNamespace
     {
         public int X, Y;
         public bool init;
+
+        public bool EqualsPosition(Cell cell)
+        {
+            return X == cell.X && Y == cell.Y;
+        }
+
+        public override string ToString()
+        {
+            return $"x{X}y{Y}:{init}";
+        }
     }
    
 }
