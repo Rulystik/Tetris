@@ -1,34 +1,74 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DefaultNamespace
 {
   public class TetraminoData
   {
-        
     public Action NewPosition;
+    public Action NewFigure;
 
     private Cell[,] cell = new Cell[4, 4];
-    private Cell[,] cellCache = new Cell[4, 4];
-
-    public ShiftDirection Direction { get; private set; }
-
-    public void Init(bool[,] array)
-    {
-      int a = 3;
-      int b = 16;
-      for (int x = 0; x < cell.GetLongLength(0); x++)
-      for (int y = 0; y < cell.GetLongLength(1); y++)
-      {
-        cell[x,y] = new Cell{X = a+x, Y = b+y , init = array[x,y]};
-      }
-      cellCache = (Cell[,]) cell.Clone();
-      NewPosition?.Invoke();
-    }
+    private Cell[,] cellCache = null;
 
     public Cell[,] Cell => cell;
     public Cell[,] CellCache => cellCache;
+    public ShiftDirection Direction { get; private set; }
 
+
+    public List<Cell> GetNewExtractCache()
+    {
+      List<Cell> result = new List<Cell>();
+      
+      for (int x = 0; x < Cell.GetLength(0); x++)
+      for (int y = 0; y < Cell.GetLength(1); y++)
+      {
+        if (Cell[x,y].Value == true)
+        {
+          result.Add(new Cell()
+          {
+            X = cell[x,y].X,
+            Y = cell[x,y].Y,
+            Value = cell[x,y].Value
+          });
+        }
+      }
+
+      if (cellCache == null)
+      {
+        return result;
+      }
+      
+      for (int x = 0; x < cellCache.GetLength(0); x++)
+      for (int y = 0; y < cellCache.GetLength(1); y++)
+      {
+        if (cellCache[x, y].Value == true)
+        {
+          for (int i = 0; i < result.Count; i++)
+          {
+            if (result[i].X == cellCache[x, y].X && result[i].Y == cellCache[x, y].Y)
+            {
+              result.Remove(result[i]);
+            }
+          }
+        }
+      }
+
+      return result;
+    }
+    
+    public void CreateNew (bool[,] array)
+    {
+      for (int x = 0; x < cell.GetLongLength(0); x++)
+      for (int y = 0; y < cell.GetLongLength(1); y++)
+      {
+        cell[x,y] = new Cell{X = Model.startPos[0] + x, Y = Model.startPos[1] + y , Value = array[x,y]};
+      }
+
+      cellCache = null;
+      NewFigure?.Invoke();
+    }
 
     public void Shift(ShiftDirection dir)
     {
@@ -40,6 +80,16 @@ namespace DefaultNamespace
       else
         Shift();
     }
+    
+    public bool TryStepBack()
+    {
+      if (cellCache == null)
+      {
+        return false;
+      }
+      cell = (Cell[,]) cellCache.Clone();
+      return true;
+    }
 
     private void Rotate()
     {
@@ -47,24 +97,6 @@ namespace DefaultNamespace
       NewPosition?.Invoke();
     }
 
-
-    // public void ShiftLeft()
-    // {
-    //   Direction = ShiftDirection.left;
-    //   Shift();
-    // }
-    //
-    // public void ShiftRight()
-    // {
-    //   Direction = ShiftDirection.right;
-    //   Shift();
-    // }
-        
-    public void StepBack()
-    {
-      cell = (Cell[,]) cellCache.Clone();
-    }
-        
     private Cell[,] RotateCell(Cell[,] target)
     {
       bool[,] figure = new bool[4,4];
@@ -72,7 +104,7 @@ namespace DefaultNamespace
       for (int x = 0; x < target.GetLongLength(0); x++)
       for (int y = 0; y < target.GetLongLength(1); y++)
       {
-        figure[x, y] = target[x, y].init;
+        figure[x, y] = target[x, y].Value;
       }
 
       figure = RotateMatrix(figure);
@@ -80,7 +112,7 @@ namespace DefaultNamespace
       for (int x = 0; x < target.GetLongLength(0); x++)
       for (int y = 0; y < target.GetLongLength(1); y++)
       {
-        target[x, y].init = figure[x, y];
+        target[x, y].Value = figure[x, y];
       }
 
       return target;

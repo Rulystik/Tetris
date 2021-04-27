@@ -64,7 +64,7 @@ namespace DefaultNamespace
 
         private void OnCellChange(Cell cell)
         {
-            _fieldView[cell.X, cell.Y].IsActive = cell.init ;
+            _fieldView[cell.X, cell.Y].IsActive = cell.Value ;
         }
 
         private void OnFieldCreate(bool[,] field)

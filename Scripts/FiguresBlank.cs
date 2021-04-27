@@ -10,9 +10,9 @@ namespace DefaultNamespace
         rotate
     }
 
-    public class Figures
+    public class FiguresBlank
     {
-        public Figures()
+        public FiguresBlank()
         {
             figureList.Add(O);
             figureList.Add(L);

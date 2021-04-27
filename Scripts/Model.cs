@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Object = System.Object;
 
 namespace DefaultNamespace
@@ -17,29 +18,29 @@ namespace DefaultNamespace
     {
         public const int XCount = 10;
         public const int YCount = 20;
-        public static readonly int[] startPos = {9,13};
-        private Figures _figures;
-        public Figures Figures => _figures ?? (_figures = new Figures()); 
         
-        [SerializeField]
-        private bool[,] _activeObj;
+        public static readonly int[] startPos = {3,16};
         
+        private FiguresBlank _figuresBlank;
+        public FiguresBlank FiguresBlank => _figuresBlank ?? (_figuresBlank = new FiguresBlank()); 
         
-        public Action <bool[,]> ActiveObjChange ;
+        // private List<Cell> _dropperFigures;
+
+        // public Action <List<Cell>> DroppedFigureAction ;
         public Action <Cell[,]> Tetromino ;
 
-        public bool[,] ActiveObj
-        {
-            get => _activeObj;
-            set
-            {
-                if (value != _activeObj)
-                {
-                    _activeObj = value;
-                    ActiveObjChange?.Invoke(_activeObj);
-                }
-            }
-        }
+        // public List<Cell> DroppedFigure
+        // {
+        //     get => _dropperFigures;
+        //     set
+        //     {
+        //         if (value != _dropperFigures)
+        //         {
+        //             _dropperFigures = value;
+        //             DroppedFigureAction?.Invoke(_dropperFigures);
+        //         }
+        //     }
+        // }
         
         [SerializeField]
         private bool[,] _field ;
@@ -58,14 +59,9 @@ namespace DefaultNamespace
                     FieldCreate?.Invoke(_field);
                 }
             }
+            get => _field;
         }
 
-        public List<Cell> FieldDropperCell { get; private set; }
-
-        public Model()
-        {
-            FieldDropperCell = new List<Cell>();
-        }
         public void SetFieldValue(int x, int y, bool value)
         {
             if (_field[x, y] != value)
@@ -74,31 +70,15 @@ namespace DefaultNamespace
                 FieldChanged?.Invoke(x, y, value);
             }
         } 
+        
         public void SetFieldValue(Cell cell)
         {
-            if (_field[cell.X, cell.Y]  != cell.init)
+            if (_field[cell.X, cell.Y]  != cell.Value)
             {
-                _field[cell.X, cell.Y] = cell.init;
+                _field[cell.X, cell.Y] = cell.Value;
                 CellChange?.Invoke(cell);
             }
         }
 
     }
-
-    public struct Cell
-    {
-        public int X, Y;
-        public bool init;
-
-        public bool EqualsPosition(Cell cell)
-        {
-            return X == cell.X && Y == cell.Y;
-        }
-
-        public override string ToString()
-        {
-            return $"x{X}y{Y}:{init}";
-        }
-    }
-   
 }
