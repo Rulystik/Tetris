@@ -1,6 +1,6 @@
 ﻿using System;
-using DefaultNamespace;
 using UnityEngine;
+using Views;
 
 [Serializable]
 public class GameInitializer : MonoBehaviour

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TetraminoView : MonoBehaviour
+public class TetrominoView : MonoBehaviour
 {
     [SerializeField] private bool _isActive;
     [Space]

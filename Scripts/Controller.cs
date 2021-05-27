@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using DefaultNamespace;
 using UnityEngine;
-
+using Views;
 public class Controller
 {
   private Model _model;
@@ -30,14 +28,14 @@ public class Controller
   {
     List<Cell> changes = GetCellsChanges();
 
-    foreach (Cell cell in changes)
-      _model.SetFieldValue(cell);
-
     if (IsStepOnCollizionCell())
     {
       Debug.Log($"Game Over");
-      return;
+      //Todo
     }
+
+    foreach (Cell cell in changes)
+      _model.SetFieldValue(cell);
   }
 
   private void OnTetraminoChange()
@@ -57,7 +55,8 @@ public class Controller
       {
         Debug.Log($"OnGround => TODO Create NEw");
        // TODO delete on field win lines 
-
+       CheckLinesForDelete(); 
+       
         CreateNewFigure();
       }
       else
@@ -70,6 +69,35 @@ public class Controller
 
     foreach (Cell cell in changes)
       _model.SetFieldValue(cell);
+  }
+
+  private void CheckLinesForDelete()
+  {
+    List<int> YList = new List<int>();
+    for (int x = 0; x < _tetramino.Cell.GetLength(0); x++)
+    for (int y = 0; y < _tetramino.Cell.GetLength(1); y++)
+    {
+      if (_tetramino.Cell[x, y].Value == true && !YList.Contains(_tetramino.Cell[x, y].Y))
+      {
+        YList.Add(_tetramino.Cell[x, y].Y);
+      }
+    }
+    
+    for (int y = 0; y < YList.Count; y++)
+      for (int x = 0; x < Model.XCount; x++)
+      {
+        if (_model.Field[x, YList[y]] == false)
+        {
+          // if (YList.Count == 1)
+          //   YList.Clear();
+          // else
+            YList.RemoveAt(y);
+          y--;
+          break;
+        }
+      }
+
+    Debug.Log($"delete list {string.Join(" ", YList)}");
   }
 
   private ErrorType IsValide()

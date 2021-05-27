@@ -1,0 +1,33 @@
+using System.Collections;
+using UnityEngine;
+
+namespace Views
+{
+  public class LoadingCurtain : MonoBehaviour
+  {
+    [SerializeField] private CanvasGroup Curtain;
+
+    private void Awake()
+    {
+      DontDestroyOnLoad(this);
+    }
+
+    public void Show()
+    {
+      gameObject.SetActive(true);
+      Curtain.alpha = 1;
+    }
+
+    public void Hide() => StartCoroutine(FadeOut());
+
+    private IEnumerator FadeOut()
+    {
+      while (Curtain.alpha > 0)
+      {
+        Curtain.alpha -= 0.03f;
+        yield return null;
+      }
+      gameObject.SetActive(false);
+    }
+  }
+}
